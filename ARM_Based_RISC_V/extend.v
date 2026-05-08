@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module extend(input [23:0] Instr,
               input [1:0] ImmSrc,
               output reg [31:0] ExtImm);

@@ -1,29 +1,36 @@
-`include "floper.v"
+`timescale 1ns / 1ps
 
 module condlogic(
-    input logic clk,reset,
+    input clk,
+    input reset,
     input [3:0] Cond,
     input [3:0] ALUFlags,
-  	input  [1:0] FlagW,
+    input [1:0] FlagW,
     input PCS, RegW, MemW,
-    output reg PCSrc, RegWrite, MemWrite
-    );
-    
+
+    // IMPORTANT → these are wires (NOT reg)
+    output PCSrc, RegWrite, MemWrite
+);
+
     wire [1:0] FlagWrite;
-  	wire [3:0] Flags;
-  	reg CondEx;
-    
-  	flopenr #(.WIDTH(2)) flagreg1(clk, reset, FlagWrite[1],ALUFlags[3:2], Flags[3:2]);
-  	flopenr #(.WIDTH(2)) flagreg0(clk, reset, FlagWrite[0],ALUFlags[1:0], Flags[1:0]);
-   	// write controls are conditional
-  	condcheck cc(Cond, Flags, CondEx);
-  
+    wire [3:0] Flags;
+    wire CondEx;
+
+    // flag registers
+    flopenr #(2) flagreg1(clk, reset, FlagWrite[1], ALUFlags[3:2], Flags[3:2]);
+    flopenr #(2) flagreg0(clk, reset, FlagWrite[0], ALUFlags[1:0], Flags[1:0]);
+
+    // condition check
+    condcheck cc(Cond, Flags, CondEx);
+
+    // flag write enable
     assign FlagWrite = FlagW & {2{CondEx}};
-  	assign RegWrite = RegW & CondEx;
-  	assign MemWrite = MemW & CondEx;
-  	assign PCSrc = PCS & CondEx;
-    
-   
+
+    // FINAL CONTROL SIGNALS (FIXED)
+    assign RegWrite = RegW & CondEx;
+    assign MemWrite = MemW & CondEx;
+    assign PCSrc    = PCS & CondEx;
+
 endmodule
 
 
@@ -62,3 +69,8 @@ module condcheck(input  [3:0] Cond,
     endcase
   
 endmodule
+
+
+
+
+

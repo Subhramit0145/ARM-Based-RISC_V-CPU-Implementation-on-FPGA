@@ -1,5 +1,4 @@
-`include "controller.v"
-`include "datapath.v"
+
 
 module cpu(input clk, reset,
 			output  [31:0] PC,
@@ -27,3 +26,7 @@ module cpu(input clk, reset,
 			ALUFlags, PC, Instr,ALUResult, WriteData, ReadData);
   
 endmodule
+
+
+
+
